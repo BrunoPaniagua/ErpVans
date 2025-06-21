@@ -1,10 +1,10 @@
 package br.com.erpvan.service;
 
+import br.com.erpvan.controller.request.PeriodoRequest;
 import br.com.erpvan.entity.Periodo;
+import br.com.erpvan.mapper.PeriodoMapper;
 import br.com.erpvan.repository.PeriodoRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,7 +15,18 @@ import java.util.Optional;
 public class PeriodoService {
 
     private final PeriodoRepository repository;
-    private final PeriodoRepository periodoRepository;
+
+    public Periodo findOrCreate(PeriodoRequest request) {
+        return repository.findByPeriodoIgnoreCase(request.periodo())
+                .orElseGet(() -> {
+                    Periodo novoPeriodo = PeriodoMapper.toPeriodo(request);
+                    return repository.save(novoPeriodo);
+                });
+    }
+
+    public Optional<Periodo> findByPeriodoIgnoreCase(String periodo) {
+        return repository.findByPeriodoIgnoreCase(periodo);
+    }
 
     public List<Periodo> findAll() {
         return repository.findAll();
@@ -44,7 +55,7 @@ public class PeriodoService {
                 newPeriodo.setPeriodo(periodo.getPeriodo());
             }
 
-            Periodo periodoSaved = periodoRepository.save(newPeriodo);
+            Periodo periodoSaved = repository.save(newPeriodo);
             return periodoSaved;
         }
         return null;
