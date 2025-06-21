@@ -26,20 +26,19 @@ public class EnderecoController {
                 .map(EnderecoMapper::toEnderecoResponse)
                 .toList();
         if (enderecos.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT)
-                    .build();
+            return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(enderecos);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EnderecoResponse> getEnderecoById(@PathVariable Long id) {
+    public ResponseEntity<?> getEnderecoById(@PathVariable Long id) {
         return enderecoService.findById(id)
                 .map(endereco -> ResponseEntity.ok(EnderecoMapper.toEnderecoResponse(endereco)))
-                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+                .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping
+    @PostMapping("")
     public ResponseEntity<EnderecoResponse> saveEndereco(@RequestBody EnderecoRequest request) {
         Endereco newEndereco = EnderecoMapper.toEndereco(request);
         Endereco savedEndereco = enderecoService.enderecoSave(newEndereco);
